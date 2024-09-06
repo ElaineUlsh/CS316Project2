@@ -2,7 +2,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -18,34 +20,32 @@ public class Client {
         Scanner keyboard = new Scanner(System.in);
         String message = keyboard.nextLine();
 
-        // sends out the packet
-        DatagramSocket socket = new DatagramSocket(); // allocates a bluffer to the port and creates the socket
+        DatagramSocket socket = new DatagramSocket();
         DatagramPacket request = new DatagramPacket(
-                message.getBytes(), // converts the String to the byte array
-                message.getBytes().length, // gets the length of the byte array, which must be provided
+                message.getBytes(),
+                message.getBytes().length,
                 serverIP,
                 serverPort
         );
-        socket.send(request); // places the packet into the internal buffer of the socket
+        socket.send(request);
 
-        // receives a reply from sending out the packet -- is a UDP packet
-        DatagramPacket reply = new DatagramPacket( // this packet is BACKED by the byte array
-                new byte[1024], // 1024 is the maximum number of bytes that is able to be held
-                1024 // used as the length
+        DatagramPacket reply = new DatagramPacket(
+                new byte[1024],
+                1024
         );
-        socket.receive(reply); // the socket will put the bytes that it received in the reply packet
-        socket.close(); // allows us to recycle the memory that was allocated to the socket
+        socket.receive(reply);
+        socket.close();
 
-        byte[] serverMessage = Arrays.copyOf( // creates a copy of the byte array given to the reply packet
+        byte[] serverMessage = Arrays.copyOf(
                 reply.getData(),
-                reply.getLength() // specifies the actual number of bytes received by the server
+                reply.getLength()
         );
 
         int value = ByteBuffer.wrap(serverMessage).getInt();
         long unsignedValue = Integer.toUnsignedLong(value);
-        //LocalDate date = LocalDate.ofEpochDay(unsignedValue);
 
-        //System.out.println(date);
-        //System.out.println(new String(date));
+        ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(unsignedValue), ZoneId.systemDefault());
+        System.out.println(unsignedValue);
+        System.out.println(date);
     }
 }
