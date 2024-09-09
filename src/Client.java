@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws Exception {
@@ -17,8 +16,7 @@ public class Client {
         InetAddress serverIP = InetAddress.getByName(args[0]);
         int serverPort = Integer.parseInt(args[1]);
 
-        Scanner keyboard = new Scanner(System.in);
-        String message = keyboard.nextLine();
+        String message = "";
 
         DatagramSocket socket = new DatagramSocket();
         DatagramPacket request = new DatagramPacket(
@@ -43,8 +41,7 @@ public class Client {
 
         int value = ByteBuffer.wrap(serverMessage).getInt();
         long unsignedValue = Integer.toUnsignedLong(value);
-
-        ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(unsignedValue), ZoneId.systemDefault());
+        ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochSecond(unsignedValue), ZoneId.systemDefault()).minusYears(70);
         System.out.println(unsignedValue);
         System.out.println(date);
     }
